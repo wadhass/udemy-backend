@@ -34,6 +34,13 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Udemy backend API is running",
+  });
+});
+
 app.post(
   "/webhooks/stripe",
   express.raw({ type: "application/json" }),
