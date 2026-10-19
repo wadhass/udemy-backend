@@ -17,6 +17,13 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
+const allowedClientOrigins = new Set([
+  process.env.CLIENT_URL || "http://localhost:5173",
+  "https://udemy-full-stack-five.vercel.app",
+  ...(process.env.CLIENT_ORIGINS || "").split(","),
+]
+  .map((origin) => origin.trim())
+  .filter(Boolean));
 
 if (!MONGO_URI) {
   throw new Error("MONGO_URI is missing. Configure it in the server environment.");
@@ -28,7 +35,7 @@ if (!JWT_SECRET) {
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    origin: [...allowedClientOrigins],
     methods: ["GET", "POST", "DELETE", "PUT"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
