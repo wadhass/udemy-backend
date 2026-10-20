@@ -18,9 +18,9 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "cloudinary": "^2.5.0",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "express": "^4.22.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.6.3",
