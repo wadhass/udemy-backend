@@ -4,13 +4,24 @@ const {
   uploadMediaToCloudinary,
   deleteMediaFromCloudinary,
 } = require("../../helpers/cloudinary");
-const instructorMiddleware = require("../../middleware/instructor-middleware");
+const authenticate = require("../../middleware/auth-middleware");
+
+function requireInstructorOrAdmin(req, res, next) {
+  if (!["instructor", "admin"].includes(req.user?.role)) {
+    return res.status(403).json({
+      success: false,
+      message: "Instructor or admin access is required",
+    });
+  }
+
+  next();
+}
 
 const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 
-router.post("/upload", ...instructorMiddleware, upload.single("file"), async (req, res) => {
+router.post("/upload", authenticate, requireInstructorOrAdmin, upload.single("file"), async (req, res) => {
   try {
     const result = await uploadMediaToCloudinary(req.file.path);
     res.status(200).json({
@@ -24,7 +35,7 @@ router.post("/upload", ...instructorMiddleware, upload.single("file"), async (re
   }
 });
 
-router.delete("/delete/:id", ...instructorMiddleware, async (req, res) => {
+router.delete("/delete/:id", authenticate, requireInstructorOrAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -48,7 +59,7 @@ router.delete("/delete/:id", ...instructorMiddleware, async (req, res) => {
   }
 });
 
-router.post("/bulk-upload", ...instructorMiddleware, upload.array("files", 10), async (req, res) => {
+router.post("/bulk-upload", authenticate, requireInstructorOrAdmin, upload.array("files", 10), async (req, res) => {
   try {
     const uploadPromises = req.files.map((fileItem) =>
       uploadMediaToCloudinary(fileItem.path)
